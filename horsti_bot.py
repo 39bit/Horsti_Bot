@@ -160,11 +160,16 @@ def echo(bot, update_id):
     global COMMON_T
 
     for update in bot.getUpdates(offset=update_id, timeout=10):
+        if update.message == None:
+            update_id = update.update_id + 1
+            continue
         chat_id = update.message.chat_id
         update_id = update.update_id + 1
         message = update.message.text
         replyto = update.message.message_id
         user = update.message.from_user.id
+
+        #print(":"+message)
 
         if chat_id not in groups.keys():
             groups[chat_id] = {}
@@ -219,6 +224,26 @@ def echo(bot, update_id):
                                 msgs.append(msg)
                                 break
                     msg = "\n".join(msgs)
+##                    while True:
+##                        words = []
+##                        word = ""
+##                        word = random.choice(g[""])
+##                        while word != "" and len(words) < 100:
+##                            words.append(word)
+##                            word = "".join(filter(lambda x:(unicodedata.category(x) in ALLOWABLE),word)).lower()
+##                            if word not in g.keys():
+##                                word = ""
+##                            else:
+##                                word = random.choice(g[word])
+##                            if word == "" and random.randint(0,8)<5:
+##                                word = random.choice(list(g.keys()))
+##                                while type(word) != str:
+##                                    word = random.choice(list(g.keys()))
+##                                if random.randint(0,10)<3 and len(words)>0:
+##                                    if words[-1] not in "!:,.?;":
+##                                        words[-1] += "."
+##                        msg = " ".join(words)
+##                        if len(msg) > 0: break
                     try:
                         bot.sendMessage(chat_id=chat_id,
                             text=msg)
@@ -301,26 +326,27 @@ def echo(bot, update_id):
                 if COMMON_T == 8:
                     COMMON_T = 0
                 msgs = []
-                while True:
-                    lets = ""
-                    lasttext = ""
-                    nextc = "_"
-                    while nextc != "" and len(lets) < 400:
-                        trytext = lasttext
-                        while random.random() < 0.33 or trytext not in g.keys():
-                            trytext = trytext[1:]
-                        nextc = random.choice(g[trytext])
-                        if nextc != "\n":
-                            lets += nextc
-                            lasttext = (lasttext + nextc)[-LOOKBACK_LETTER_COUNT:]
-                        if random.random() < 0.25 and nextc == "":
-                            nextc = random.choice(g[""])
-                            lets += ". "+ nextc
-                            lasttext = (lasttext + nextc)[-LOOKBACK_LETTER_COUNT:]
-                    msg = lets
-                    if len(msg) > 0:
-                        msgs.append(msg)
-                        break
+                if True:
+                    while True:
+                            lets = ""
+                            lasttext = ""
+                            nextc = "_"
+                            while nextc != "" and len(lets) < 400:
+                                trytext = lasttext
+                                while random.random() < 0.33 or trytext not in g.keys():
+                                    trytext = trytext[1:]
+                                nextc = random.choice(g[trytext])
+                                if nextc != "\n":
+                                    lets += nextc
+                                    lasttext = (lasttext + nextc)[-LOOKBACK_LETTER_COUNT:]
+                                if random.random() < 0.25 and nextc == "":
+                                    nextc = random.choice(g[""])
+                                    lets += ". "+ nextc
+                                    lasttext = (lasttext + nextc)[-LOOKBACK_LETTER_COUNT:]
+                            msg = lets
+                            if len(msg) > 0:
+                                msgs.append(msg)
+                                break
                 msg = " ".join(msgs)
                 def quoteEscape(s):
                     return s.replace("\\","\\\\").replace("\"","\\\"")
@@ -338,6 +364,42 @@ def echo(bot, update_id):
                     bot.sendMessage(chat_id=chat_id,
                             text="Could not send voice",
                             reply_to_message_id=replyto)    
+##                if "" in g.keys():
+##                    while True:
+##                        words = []
+##                        word = ""
+##                        word = random.choice(g[""])
+##                        while word != "" and len(words) < 120:
+##                            words.append(word)
+##                            word = "".join(filter(lambda x:(unicodedata.category(x) in ALLOWABLE),word)).lower()
+##                            if word not in g.keys():
+##                                word = ""
+##                            else:
+##                                word = random.choice(g[word])
+##                            if word == "" and random.randint(0,8)<6:
+##                                word = random.choice(list(g.keys()))
+##                                while type(word) != str:
+##                                    word = random.choice(list(g.keys()))
+##                                if random.randint(0,10)<3 and len(words)>0:
+##                                    if words[-1] not in "!:,.?;":
+##                                        words[-1] += "."
+##                        msg = " ".join(words)
+##                        if len(msg) > 0: break
+##                    try:
+##                        os.system("rm markov.ogg 2>nul")
+##                        os.system("espeak -s" + str(g[2]) + " -v" + g[1] + " \"" + limit(quoteEscape(msg)) + "\" --stdout | opusenc - markov.ogg >nul 2>&1")
+##                        bot.sendVoice(chat_id=chat_id,
+##                            voice=open("markov.ogg","rb"))
+##                    except BaseException as e:
+##                        exc_type, exc_value, exc_traceback = sys.exc_info()
+##                        print("\n".join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+##                        bot.sendMessage(chat_id=chat_id,
+##                                text="Could not send voice",
+##                                reply_to_message_id=replyto)                    
+##                else:
+##                    bot.sendMessage(chat_id=chat_id,
+##                            text="[Chain is empty]",
+##                            reply_to_message_id=replyto)
             if cmd == "/horstittslang":
                 v = " ".join(message.split(" ")[1:]).strip()
                 if v not in LANGS:
