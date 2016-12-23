@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# horstibot.py
+# markovbot.py
 
 
 T = "BOT_TOKEN"
@@ -100,6 +100,9 @@ def main():
                 elif update_id == last_uid and SKIP:
                     print("Queue flushed")
                 last_uid = update_id
+            except telegram.error.NetworkError as e:
+                sleep(1)
+                counter = 0
             except telegram.TelegramError as e:
                 if e.message in ("Bad Gateway", "Timed out"):
                     counter = 0
@@ -109,6 +112,8 @@ def main():
                     print("Ratelimit: sleeping for ", 5*counter, " seconds")
                     sleep(5*counter)
                     rate_lim = True
+                elif "invalid server response" in e.message.lower():
+                    sleep(1)
                 else:
                     counter = 0
                     raise e
@@ -224,26 +229,6 @@ def echo(bot, update_id):
                                 msgs.append(msg)
                                 break
                     msg = "\n".join(msgs)
-##                    while True:
-##                        words = []
-##                        word = ""
-##                        word = random.choice(g[""])
-##                        while word != "" and len(words) < 100:
-##                            words.append(word)
-##                            word = "".join(filter(lambda x:(unicodedata.category(x) in ALLOWABLE),word)).lower()
-##                            if word not in g.keys():
-##                                word = ""
-##                            else:
-##                                word = random.choice(g[word])
-##                            if word == "" and random.randint(0,8)<5:
-##                                word = random.choice(list(g.keys()))
-##                                while type(word) != str:
-##                                    word = random.choice(list(g.keys()))
-##                                if random.randint(0,10)<3 and len(words)>0:
-##                                    if words[-1] not in "!:,.?;":
-##                                        words[-1] += "."
-##                        msg = " ".join(words)
-##                        if len(msg) > 0: break
                     try:
                         bot.sendMessage(chat_id=chat_id,
                             text=msg)
@@ -364,42 +349,6 @@ def echo(bot, update_id):
                     bot.sendMessage(chat_id=chat_id,
                             text="Could not send voice",
                             reply_to_message_id=replyto)    
-##                if "" in g.keys():
-##                    while True:
-##                        words = []
-##                        word = ""
-##                        word = random.choice(g[""])
-##                        while word != "" and len(words) < 120:
-##                            words.append(word)
-##                            word = "".join(filter(lambda x:(unicodedata.category(x) in ALLOWABLE),word)).lower()
-##                            if word not in g.keys():
-##                                word = ""
-##                            else:
-##                                word = random.choice(g[word])
-##                            if word == "" and random.randint(0,8)<6:
-##                                word = random.choice(list(g.keys()))
-##                                while type(word) != str:
-##                                    word = random.choice(list(g.keys()))
-##                                if random.randint(0,10)<3 and len(words)>0:
-##                                    if words[-1] not in "!:,.?;":
-##                                        words[-1] += "."
-##                        msg = " ".join(words)
-##                        if len(msg) > 0: break
-##                    try:
-##                        os.system("rm markov.ogg 2>nul")
-##                        os.system("espeak -s" + str(g[2]) + " -v" + g[1] + " \"" + limit(quoteEscape(msg)) + "\" --stdout | opusenc - markov.ogg >nul 2>&1")
-##                        bot.sendVoice(chat_id=chat_id,
-##                            voice=open("markov.ogg","rb"))
-##                    except BaseException as e:
-##                        exc_type, exc_value, exc_traceback = sys.exc_info()
-##                        print("\n".join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-##                        bot.sendMessage(chat_id=chat_id,
-##                                text="Could not send voice",
-##                                reply_to_message_id=replyto)                    
-##                else:
-##                    bot.sendMessage(chat_id=chat_id,
-##                            text="[Chain is empty]",
-##                            reply_to_message_id=replyto)
             if cmd == "/horstittslang":
                 v = " ".join(message.split(" ")[1:]).strip()
                 if v not in LANGS:
