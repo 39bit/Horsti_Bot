@@ -336,11 +336,8 @@ def echo(bot, update_id):
                 def quoteEscape(s):
                     return s.replace("\\","\\\\").replace("\"","\\\"")
                 try:
-                    print("RM")
                     os.system("rm horsti.ogg 2>nul")
-                    print("GEN")
-                    os.system("espeak -s" + str(g[2]) + " -v" + g[1] + " \"" + limit(quoteEscape(msg)) + "\" --stdout | opusenc - horsti.ogg >nul 2>&1")
-                    print("SEND")
+                    os.system("espeak -s" + str(g[2]) + " -v" + g[1] + " " + shlex.quote(limit(msg)) + " --stdout | opusenc - horsti.ogg >nul 2>&1")
                     bot.sendVoice(chat_id=chat_id,
                         voice=open("horsti.ogg","rb"))
                 except BaseException as e:
